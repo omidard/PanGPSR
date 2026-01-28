@@ -19,6 +19,7 @@
 * **Interactive Visualization:** Generates comprehensive HTML reports and publication-ready plots.
 
 ### Workflow Overview
+
 ```mermaid
 graph TD
     A[NCBI Download] --> B(CheckM2 QC)
@@ -32,15 +33,42 @@ graph TD
     I --> J[TM-Align Structure]
     G --> K[Final Visualization]
     J --> K
-🛠️ Installation & Setup1. PrerequisitesEnsure you have the following installed:Nextflow (>=22.10.1)Conda or Mamba2. Clone RepositoryBashgit clone [https://github.com/omidard/panGPR.git](https://github.com/omidard/panGPR.git)
+🛠️ Installation & Setup
+1. Prerequisites
+Ensure you have the following installed:
+
+Nextflow (>=22.10.1)
+
+Conda or Mamba
+
+2. Clone Repository
+Bash
+git clone [https://github.com/omidard/panGPR.git](https://github.com/omidard/panGPR.git)
 cd panGPR
-3. Setup DatabasesThe pipeline requires reference databases. Configure these paths in nextflow.config or pass them via command line flags:CheckM2 Database: (uniref100.KO.1.dmnd)Bakta Database: (Light or full version)GTDB-Tk Database: (Release 214 or later)🏃 Quick StartRun the pipeline with default settings to analyze a specific taxon.Bashnextflow run main.nf \
+3. Setup Databases
+The pipeline requires reference databases. Configure these paths in nextflow.config or pass them via command line flags:
+
+CheckM2 Database: (uniref100.KO.1.dmnd)
+
+Bakta Database: (Light or full version)
+
+GTDB-Tk Database: (Release 214 or later)
+
+🏃 Quick Start
+Run the pipeline with default settings to analyze a specific taxon.
+
+Bash
+nextflow run main.nf \
     --taxon "Lactobacillus iners" \
     --email "your_email@university.edu" \
     --swissmodel_token "YOUR_API_TOKEN" \
     -with-conda \
     -resume
-⚡ Advanced UsageFor production runs requiring fine-tuned control over inputs, outputs, and analysis modules:Bashnextflow run main.nf \
+⚡ Advanced Usage
+For production runs requiring fine-tuned control over inputs, outputs, and analysis modules:
+
+Bash
+nextflow run main.nf \
     \
     # --- Mandatory Inputs ---
     --taxon "Lactobacillus iners" \
@@ -64,7 +92,36 @@ cd panGPR
     -resume \
     -with-report run_report.html \
     -with-timeline timeline.html
-⚙️ Parameter ReferenceMandatory ArgumentsParameterDescriptionExample--taxonScientific name of the organism (NCBI Taxonomy)."Lactobacillus iners"--emailUser email for NCBI Entrez access."user@example.com"--swissmodel_tokenAPI token for SWISS-MODEL structural analysis."a1b2c3d4..."Input & OutputParameterDescriptionDefault--outdirDirectory for all results and reports.results--download_limitMax genomes to download (0 = all).0Analysis SettingsParameterDescriptionDefault--cdhit_identitySequence identity % for pangenome clustering.80--universeCarveMe universe template (grampos, gramneg, etc).gramposSkip Flags (Optimization)ParameterDescriptionDefault--skip_gtdbSkip taxonomic filtering step.false--skip_structureSkip structural modeling & alignment (saves significant time).false--skip_vizSkip final visualization generation.falseDatabase OverridesParameterDescription--checkm2_dbPath to CheckM2 .dmnd file.--bakta_dbPath to Bakta database folder.--gtdb_dbPath to GTDB-Tk database folder.📂 Output StructureThe pipeline generates a clean, organized results directory:Plaintextresults/
+⚙️ Parameter Reference
+Mandatory Arguments
+Parameter	Description	Example
+--taxon	Scientific name of the organism (NCBI Taxonomy).	"Lactobacillus iners"
+--email	User email for NCBI Entrez access.	"user@example.com"
+--swissmodel_token	API token for SWISS-MODEL structural analysis.	"a1b2c3d4..."
+Input & Output
+Parameter	Description	Default
+--outdir	Directory for all results and reports.	results
+--download_limit	Max genomes to download (0 = all).	0
+Analysis Settings
+Parameter	Description	Default
+--cdhit_identity	Sequence identity % for pangenome clustering.	80
+--universe	CarveMe universe template (grampos, gramneg, etc).	grampos
+Skip Flags (Optimization)
+Parameter	Description	Default
+--skip_gtdb	Skip taxonomic filtering step.	false
+--skip_structure	Skip structural modeling & alignment (saves significant time).	false
+--skip_viz	Skip final visualization generation.	false
+Database Overrides
+Parameter	Description
+--checkm2_db	Path to CheckM2 .dmnd file.
+--bakta_db	Path to Bakta database folder.
+--gtdb_db	Path to GTDB-Tk database folder.
+--taxdump_cache	Path to NCBI Taxdump directory.
+📂 Output Structure
+The pipeline generates a clean, organized results directory:
+
+Plaintext
+results/
 ├── 01_genomes/             # Raw FASTA files from NCBI
 ├── 02_qc/                  # CheckM2 Quality Reports
 ├── 03_filtered/            # Cleaned high-quality genomes
@@ -76,4 +133,13 @@ cd panGPR
 ├── 12_structalign/         # TM-align structural alignments
 ├── 13_analysis/            # Sequence vs Structure divergence stats
 └── 14_visualization/       # Final plots, heatmaps, and summary PDFs
-📬 Contact & CitationAuthor: Omid ArdalaniEmail: omidard@dtu.dkInstitution: The Novo Nordisk Foundation Center for Biosustainability (DTU Biosustain)If you use panGPR in your research, please cite:Ardalani, O., et al. (2025). panGPR: A pipeline for structural and metabolic pangenomics.
+📬 Contact & Citation
+Author: Omid Ardalani
+
+Email: omidard@dtu.dk
+
+Institution: The Novo Nordisk Foundation Center for Biosustainability (DTU Biosustain)
+
+If you use panGPR in your research, please cite:
+
+Ardalani, O., et al. (2025). panGPR: A pipeline for structural and metabolic pangenomics.
