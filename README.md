@@ -68,17 +68,6 @@ Ensure you have the following dependencies installed:
 * **[Conda](https://docs.conda.io/en/latest/)** or **[Mamba](https://github.com/mamba-org/mamba)**
 
 
-💻 Requirements & Dependencies
-panGPR utilizes a modular environment strategy to ensure reproducibility. The pipeline requires the following tools, organized into isolated Conda environments:
-
-Environment,Key Packages,Purpose
-pangenome_env,"python=3.9, biopython, cd-hit, pandas, seaborn","Core scripts, clustering, and visualization."
-checkm2_env,"checkm2, diamond",Genome quality assessment (Completeness/Contamination).
-bakta_env,"bakta, amrfinderplus",High-throughput genome annotation.
-carveme_env,"carveme, diamond, cplex (optional)",Metabolic reconstruction and gap-filling.
-gtdbtk_env,gtdbtk,Taxonomic classification and filtering.
-
-
 ### 2. Clone the Repository
 ```bash
 git clone [https://github.com/omidard/panGPR.git](https://github.com/omidard/panGPR.git)
