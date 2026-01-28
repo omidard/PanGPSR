@@ -1,144 +1,191 @@
-# panGPR: Pangenome-Scale Metabolic Reconstruction & Structural Analysis
+<div align="center">
 
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.10.1-brightgreen.svg)](https://www.nextflow.io/)
+# panGPR
+### Pangenome-Scale Metabolic Reconstruction & Structural Analysis
+
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.10.1-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
+[![Docker](https://img.shields.io/badge/docker-compatible-0db7ed.svg?labelColor=000000)](https://www.docker.com/)
+[![Python](https://img.shields.io/badge/python-3.9+-3776AB.svg?labelColor=000000)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/badge/docker-compatible-blue.svg)](https://www.docker.com/)
-[![Powered by CarveMe](https://img.shields.io/badge/Powered%20by-CarveMe-orange)](https://github.com/cdanielmachado/carveme)
+[![DOI](https://img.shields.io/badge/DOI-10.1101%2F2025.panGPR-blue)](https://doi.org)
 
-**panGPR** is a robust, production-grade Nextflow pipeline designed for the automated reconstruction of Genome-Scale Metabolic Models (GEMs) at the pangenome level. It seamlessly integrates genome retrieval, rigorous quality control, metabolic reconstruction, and high-throughput structural analysis to map **Gene-Protein-Reaction (GPR)** associations across entire bacterial species.
+**panGPR** is a robust, production-grade bioinformatics pipeline designed for the automated reconstruction of **Genome-Scale Metabolic Models (GEMs)** at the pangenome level. It bridges the gap between genomics and structural biology by mapping **Gene-Protein-Reaction (GPR)** associations across entire bacterial species with high-throughput structural validation.
+
+[Features](#-key-features) • [Installation](#%EF%B8%8F-installation) • [Quick Start](#-quick-start) • [Advanced Usage](#-advanced-usage) • [Outputs](#-outputs) • [Citation](#-citation)
+
+</div>
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
-* **Automated Data Retrieval:** Fetches genomes directly from NCBI based on taxonomy.
-* **Rigorous QC:** Filters contamination using **CheckM2** and **GTDB-Tk**.
-* **Metabolic Reconstruction:** Builds species-specific GEMs using **CarveMe**.
-* **Structural Divergence:** Performs automated homology modeling (**SWISS-MODEL**) and structural alignment (**TM-align**) for thousands of reactions.
-* **Pangenome Analysis:** Clustered protein analysis using **CD-HIT**.
-* **Interactive Visualization:** Generates comprehensive HTML reports and publication-ready plots.
+| Feature | Description |
+| :--- | :--- |
+| **📦 Automated Retrieval** | Fetches genomes directly from NCBI using taxonomy-based queries. |
+| **🛡️ Rigorous QC** | Multi-stage filtering using **CheckM2** (contamination) and **GTDB-Tk** (taxonomy). |
+| **🧬 Metabolic Modeling** | Builds species-specific GEMs via **CarveMe** with gap-filling optimization. |
+| **🏗️ Structural Analysis** | High-throughput homology modeling (**SWISS-MODEL**) and structural alignment (**TM-align**). |
+| **📊 Pangenomics** | Protein clustering (**CD-HIT**) to determine core vs. accessory metabolic potential. |
+| **📈 Reporting** | Generates publication-ready HTML reports, metabolic heatmaps, and diversity plots. |
 
-### Workflow Overview
+---
+
+## 🔄 Workflow Overview
 
 ```mermaid
 graph TD
+    subgraph "1. Genomics & QC"
     A[NCBI Download] --> B(CheckM2 QC)
     B --> C{GTDB Filter}
+    end
+
+    subgraph "2. Annotation & Modeling"
     C -->|Pass| D[Bakta Annotation]
     D --> E[CarveMe GEMs]
     D --> F[CD-HIT Clustering]
-    E --> G[Metabolic Matrix]
-    F --> H[Reaction Sequences]
-    H --> I[SWISS-MODEL]
+    end
+
+    subgraph "3. Structural Validation"
+    F --> H[Extract Reaction Seqs]
+    H --> I[SWISS-MODEL API]
     I --> J[TM-Align Structure]
+    end
+
+    subgraph "4. Integration"
+    E --> G[Metabolic Matrix]
     G --> K[Final Visualization]
     J --> K
-🛠️ Installation & Setup
-1. Prerequisites
-Ensure you have the following installed:
+    end
+```
 
-Nextflow (>=22.10.1)
+---
 
-Conda or Mamba
+## 🛠️ Installation
 
-2. Clone Repository
-Bash
-git clone https://github.com/omidard/panGPR.git
+### 1. Prerequisites
+Ensure you have the following dependencies installed:
+* **[Nextflow](https://www.nextflow.io/)** (`>=22.10.1`)
+* **[Conda](https://docs.conda.io/en/latest/)** or **[Mamba](https://github.com/mamba-org/mamba)**
+
+### 2. Clone the Repository
+```bash
+git clone [https://github.com/omidard/panGPR.git](https://github.com/omidard/panGPR.git)
 cd panGPR
-3. Setup Databases
-The pipeline requires reference databases. Configure these paths in nextflow.config or pass them via command line flags:
+```
 
-CheckM2 Database: (uniref100.KO.1.dmnd)
+### 3. Database Configuration
+The pipeline relies on several reference databases. Configure these paths in `nextflow.config` or pass them at runtime:
+* **CheckM2 Database:** `uniref100.KO.1.dmnd`
+* **Bakta Database:** (Full or Light)
+* **GTDB-Tk Database:** (Release 214+)
 
-Bakta Database: (Light or full version)
+---
 
-GTDB-Tk Database: (Release 214 or later)
+## 🏃 Quick Start
 
-🏃 Quick Start
-Run the pipeline with default settings to analyze a specific taxon.
+To analyze a specific taxon using default settings:
 
-Bash
+```bash
 nextflow run main.nf \
     --taxon "Lactobacillus iners" \
     --email "your_email@university.edu" \
     --swissmodel_token "YOUR_API_TOKEN" \
     -with-conda \
     -resume
-⚡ Advanced Usage
-For production runs requiring fine-tuned control over inputs, outputs, and analysis modules:
+```
 
-Bash
+---
+
+## ⚡ Advanced Usage
+
+For production environments, use the advanced flags to control inputs, database paths, and skipping logic.
+
+```bash
 nextflow run main.nf \
     \
-    # --- Mandatory Inputs ---
+    # --- 🎯 Mandatory Inputs ---
     --taxon "Lactobacillus iners" \
     --email "omidard@biosustain.dtu.dk" \
-    --swissmodel_token "YOUR_TOKEN" \
+    --swissmodel_token "YOUR_SWISSMODEL_TOKEN" \
     \
-    # --- Input / Output Control ---
-    --outdir "./results_v1" \
+    # --- 📂 Input / Output ---
+    --outdir "./results_project_X" \
     --download_limit 0 \
     \
-    # --- Analysis Tuning ---
+    # --- 🎛️ Analysis Tuning ---
     --cdhit_identity 80 \
     --universe "grampos" \
     \
-    # --- Module Skipping (Opt-out) ---
+    # --- ⏭️ Optimization (Skip Flags) ---
     --skip_gtdb false \
     --skip_structure false \
+    --skip_viz false \
     \
-    # --- Execution Flags ---
+    # --- 🚀 Execution Flags ---
     -with-conda \
     -resume \
-    -with-report run_report.html \
+    -with-report execution_report.html \
     -with-timeline timeline.html
-⚙️ Parameter Reference
-Mandatory Arguments
-Parameter	Description	Example
---taxon	Scientific name of the organism (NCBI Taxonomy).	"Lactobacillus iners"
---email	User email for NCBI Entrez access.	"user@example.com"
---swissmodel_token	API token for SWISS-MODEL structural analysis.	"a1b2c3d4..."
-Input & Output
-Parameter	Description	Default
---outdir	Directory for all results and reports.	results
---download_limit	Max genomes to download (0 = all).	0
-Analysis Settings
-Parameter	Description	Default
---cdhit_identity	Sequence identity % for pangenome clustering.	80
---universe	CarveMe universe template (grampos, gramneg, etc).	grampos
-Skip Flags (Optimization)
-Parameter	Description	Default
---skip_gtdb	Skip taxonomic filtering step.	false
---skip_structure	Skip structural modeling & alignment (saves significant time).	false
---skip_viz	Skip final visualization generation.	false
-Database Overrides
-Parameter	Description
---checkm2_db	Path to CheckM2 .dmnd file.
---bakta_db	Path to Bakta database folder.
---gtdb_db	Path to GTDB-Tk database folder.
-📂 Output Structure
-The pipeline generates a clean, organized results directory:
+```
 
-Plaintext
+---
+
+## ⚙️ Parameter Reference
+
+### Mandatory Arguments
+| Flag | Description | Example |
+| :--- | :--- | :--- |
+| `--taxon` | Scientific name (NCBI Taxonomy). | `"E. coli"` |
+| `--email` | Email for NCBI Entrez API access. | `"user@lab.edu"` |
+| `--swissmodel_token` | API Token for structural modeling. | `a1b2c3...` |
+
+### Optimization & Skipping
+| Flag | Default | Description |
+| :--- | :--- | :--- |
+| `--skip_gtdb` | `false` | Skip GTDB-Tk taxonomic filtering. |
+| `--skip_structure` | `false` | Skip heavy structural modeling (SWISS-MODEL). |
+| `--skip_viz` | `false` | Skip final plot generation. |
+
+### Analysis Settings
+| Flag | Default | Description |
+| :--- | :--- | :--- |
+| `--cdhit_identity` | `80` | Identity threshold (%) for protein clustering. |
+| `--universe` | `grampos` | CarveMe universe (`grampos`, `gramneg`, `cyanobacteria`). |
+
+---
+
+## 📂 Outputs
+
+Results are organized into a hierarchical directory structure:
+
+```text
 results/
-├── 01_genomes/             # Raw FASTA files from NCBI
-├── 02_qc/                  # CheckM2 Quality Reports
-├── 03_filtered/            # Cleaned high-quality genomes
-├── 05_annotation/          # Bakta annotations (.gff, .faa)
-├── 06_pangenome/           # CD-HIT clusters & presence/absence matrix
-├── 07_GEMs/                # Metabolic Models (SBML .xml format)
-├── 08_metabolic_analysis/  # GPR Associations & Reaction Matrix
-├── 10_swiss_model/         # Homology models (PDB files)
-├── 12_structalign/         # TM-align structural alignments
-├── 13_analysis/            # Sequence vs Structure divergence stats
-└── 14_visualization/       # Final plots, heatmaps, and summary PDFs
-📬 Contact & Citation
-Author: Omid Ardalani
+├── 01_genomes/             # 🧬 Raw FASTA assemblies
+├── 02_qc/                  # 🛡️ Quality Control Reports (CheckM2)
+├── 03_filtered/            # ✅ High-quality genomes
+├── 05_annotation/          # 📝 Bakta annotations (.gff, .faa)
+├── 06_pangenome/           # 🧩 CD-HIT clusters & PA matrix
+├── 07_GEMs/                # 🔋 Metabolic Models (SBML .xml)
+├── 08_metabolic_analysis/  # 📊 GPR Matrix & Reaction Presence
+├── 10_swiss_model/         # 🏗️ Homology Models (PDB)
+├── 12_structalign/         # 📐 TM-align structural alignments
+└── 14_visualization/       # 📈 Final Plots & Summary Reports
+```
 
-Email: omidard@dtu.dk
+---
 
-Institution: The Novo Nordisk Foundation Center for Biosustainability (DTU Biosustain)
+## 📬 Contact & Citation
 
-If you use panGPR in your research, please cite:
+**Maintained by:** **Omid Ardalani** *The Novo Nordisk Foundation Center for Biosustainability (DTU Biosustain)* 📧 [omidard@dtu.dk](mailto:omidard@dtu.dk)
 
-Ardalani, O., et al. (2025). panGPR: A pipeline for structural and metabolic pangenomics.
+If you use **panGPR** in your research, please cite:
+
+```bibtex
+@article{Ardalani2025panGPR,
+  title={panGPR: A pipeline for structural and metabolic pangenomics},
+  author={Ardalani, Omid and [Co-Authors]},
+  journal={Bioinformatics (In Prep)},
+  year={2025},
+  publisher={Oxford University Press}
+}
+```
