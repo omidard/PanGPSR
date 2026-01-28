@@ -43,7 +43,7 @@ Conda or Mamba
 
 2. Clone Repository
 Bash
-git clone [https://github.com/omidard/panGPR.git](https://github.com/omidard/panGPR.git)
+git clone https://github.com/omidard/panGPR.git
 cd panGPR
 3. Setup Databases
 The pipeline requires reference databases. Configure these paths in nextflow.config or pass them via command line flags:
@@ -116,7 +116,6 @@ Parameter	Description
 --checkm2_db	Path to CheckM2 .dmnd file.
 --bakta_db	Path to Bakta database folder.
 --gtdb_db	Path to GTDB-Tk database folder.
---taxdump_cache	Path to NCBI Taxdump directory.
 📂 Output Structure
 The pipeline generates a clean, organized results directory:
 
